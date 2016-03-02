@@ -34,10 +34,11 @@ class Controller(QWidget):
 
     def open(self):
         fname = QFileDialog.getOpenFileName(self.mainwindow, 'Open file...', os.getcwd())
-        arr = self.model.read_csv_array(fname[0], delimiter=',')
+        arr = self.model.read_csv_array(fname[0], delimiter=';')
         tv = QTableView()
-        print(arr[0][0:len(arr[0])-1])
-        print(arr[1:len(arr)][0])
+        # Creating table model,
+        #   arr[0] -> header
+        #   arr[1:len(arr)] -> actual data
         self.table_model = TableModel(arr[1:len(arr)], arr[0])
         tv.setModel(self.table_model)
         self.view.verticalLayout.addWidget(tv)

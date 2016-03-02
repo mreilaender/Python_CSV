@@ -25,3 +25,24 @@ class TableModel(QAbstractTableModel):
             return self.header[col]
         return None
 
+    def flags(self, *args, **kwargs):
+        return Qt.ItemIsEditable | Qt.ItemIsSelectable | Qt.ItemIsEnabled
+
+    def setData(self, index, value, role):
+        self.data_in[index.row()][index.column()] = value
+        return True
+
+    def insertRow(self, row, rows=1, insert_data=""):
+        """
+        Inserts a row at a given row
+
+        :param insert_data: Placeholder to be inserted in every column
+        :param row: Int Row where the row will be inserted
+        :param rows: Number of rows that will be implemented
+        """
+        self.layoutAboutToBeChanged.emit()
+        # Filling array with empty strings
+        for tmp in range(rows):
+            self.data_in.insert(row, [insert_data for x in range(0, len(self.data_in[0]))])
+        print(self.data_in)
+        self.layoutChanged.emit()

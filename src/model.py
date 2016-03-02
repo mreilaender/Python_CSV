@@ -23,25 +23,8 @@ class Model(object):
             fname = QFileDialog.getSaveFileName(self.mainwindow, 'Save file as...', os.getcwd())
 
     def read_csv_array(self, filename, delimiter=' ', quotechar='|'):
-        arr = []
-        # Creating 2d array (columns and rows the same as the csv) and fill it with 0
-        with open(filename, newline='\n') as csvfile:
-            tmp = csv.reader(csvfile, delimiter=delimiter, quotechar=quotechar)
-            rows, columns = 0, 0
-            for row in tmp:
-                rows += 1
-                columns = len(row)
-            arr = [[0 for x in range(columns)] for x in range(rows)]
-            del tmp
-
-        # Filling the 2d array created above
-        with open(filename, newline='\n') as csvfile:
-            spamreader = csv.reader(csvfile, delimiter=delimiter, quotechar=quotechar)
-            curr_row, curr_column = 0, 0
-            for row in spamreader:
-                curr_column = 0
-                for element in row:
-                    arr[curr_row][curr_column] = element.strip()
-                    curr_column += 1
-                curr_row += 1
-        return arr
+        reader = csv.reader(open(filename), delimiter=delimiter)
+        data = []
+        for row in reader:
+            data.append(row)
+        return data

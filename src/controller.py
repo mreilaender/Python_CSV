@@ -34,7 +34,7 @@ class Controller(QWidget):
 
     def open(self):
         fname = QFileDialog.getOpenFileName(self.mainwindow, 'Open file...', os.getcwd())
-        arr = self.model.read_csv_array(fname[0], delimiter=';')
+        arr = self.model.read_csv_array(fname[0], delimiter=',')
         tv = QTableView()
         print(arr[0][0:len(arr[0])-1])
         print(arr[1:len(arr)][0])

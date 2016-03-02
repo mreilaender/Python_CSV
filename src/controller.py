@@ -26,8 +26,12 @@ class Controller(QWidget):
         # Set up action handler
         self.setup_signals()
 
+        # Set up everything else
+        self.table_view = QTableView()
+
     def setup_signals(self):
         self.view.open.triggered.connect(self.open)
+        self.view.insert_row.triggered.connect(self.insert_row)
         # self.view.open.triggered.connect(lambda: self.model.on_button_pressed(self.view.open))
         # self.view.save.triggered.connect(lambda: self.model.on_button_pressed(self.view.save))
         # self.view.save_as.triggered.connect(lambda: self.model.on_button_pressed(self.view.save_as))
@@ -35,19 +39,26 @@ class Controller(QWidget):
     def open(self):
         fname = QFileDialog.getOpenFileName(self.mainwindow, 'Open file...', os.getcwd())
         arr = self.model.read_csv_array(fname[0], delimiter=';')
-        tv = QTableView()
         # Creating table model,
         #   arr[0] -> header
         #   arr[1:len(arr)] -> actual data
-        self.table_model = TableModel(arr[1:len(arr)], arr[0])
-        tv.setModel(self.table_model)
-        self.view.verticalLayout.addWidget(tv)
+        table_model = TableModel(arr[1:len(arr)], arr[0])
+        self.table_view.setModel(table_model)
+        self.view.verticalLayout.addWidget(self.table_view)
 
     def save(self):
         pass
 
     def save_as(self):
         pass
+
+    def insert_row(self):
+        """
+        Inserts a row at above the row of the currently focused element
+
+        """
+        self.table_view.model().insertRow(self.table_view.currentIndex().row()+1)
+        # print(self.table_view.currentIndex().row())
 
 app = QApplication(sys.argv)
 controller = Controller()

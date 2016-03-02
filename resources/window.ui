@@ -46,6 +46,7 @@
      <string>Edit</string>
     </property>
     <addaction name="actionCopy_as"/>
+    <addaction name="insert_row"/>
    </widget>
    <widget class="QMenu" name="menuWindows">
     <property name="title">
@@ -124,6 +125,14 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+Q</string>
+   </property>
+  </action>
+  <action name="insert_row">
+   <property name="text">
+    <string>Insert Row</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+I</string>
    </property>
   </action>
  </widget>

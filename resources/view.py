@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'window.ui'
 #
-# Created: Tue Mar  1 15:15:18 2016
+# Created: Wed Mar  2 22:16:34 2016
 #      by: pyside-uic 0.2.15 running on PySide 1.2.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -46,12 +46,15 @@ class Ui_View(object):
         self.actionCopy_as.setObjectName("actionCopy_as")
         self.actionExit = QtGui.QAction(View)
         self.actionExit.setObjectName("actionExit")
+        self.insert_row = QtGui.QAction(View)
+        self.insert_row.setObjectName("insert_row")
         self.menuFile.addAction(self.open)
         self.menuFile.addAction(self.save)
         self.menuFile.addAction(self.save_as)
         self.menuFile.addAction(self.actionNew)
         self.menuFile.addAction(self.actionExit)
         self.menuEdit.addAction(self.actionCopy_as)
+        self.menuEdit.addAction(self.insert_row)
         self.menubar.addAction(self.menuFile.menuAction())
         self.menubar.addAction(self.menuEdit.menuAction())
         self.menubar.addAction(self.menuWindows.menuAction())
@@ -85,4 +88,6 @@ class Ui_View(object):
         self.actionExit.setText(QtGui.QApplication.translate("View", "Exit", None, QtGui.QApplication.UnicodeUTF8))
         self.actionExit.setStatusTip(QtGui.QApplication.translate("View", "Exit program", None, QtGui.QApplication.UnicodeUTF8))
         self.actionExit.setShortcut(QtGui.QApplication.translate("View", "Ctrl+Q", None, QtGui.QApplication.UnicodeUTF8))
+        self.insert_row.setText(QtGui.QApplication.translate("View", "Insert Row", None, QtGui.QApplication.UnicodeUTF8))
+        self.insert_row.setShortcut(QtGui.QApplication.translate("View", "Ctrl+I", None, QtGui.QApplication.UnicodeUTF8))
 

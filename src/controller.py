@@ -68,7 +68,7 @@ class Controller(QWidget):
             if not fname[0] == '':
                 self.model.current_file = fname[0]
         else:
-            QErrorMessage().showMessage("Test") # immediately closes, dont know why TODO
+            # QErrorMessage().showMessage("Test") # immediately closes, dont know why TODO
             self.view.statusbar.showMessage("Please open a file first")
 
     def insert_row(self):

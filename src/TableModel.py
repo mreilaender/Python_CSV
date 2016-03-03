@@ -44,5 +44,11 @@ class TableModel(QAbstractTableModel):
         # Filling array with empty strings
         for tmp in range(rows):
             self.data_in.insert(row, [insert_data for x in range(0, len(self.data_in[0]))])
-        print(self.data_in)
         self.layoutChanged.emit()
+
+    def get_data_as_2d_array(self):
+        table_data = self.data_in
+        table_header = self.header
+        arr = [table_header]
+        [arr.append(table_data[x]) for x in range(0, len(table_data))]
+        return arr

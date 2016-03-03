@@ -1,7 +1,7 @@
 import os
 import sys
 
-from PySide.QtGui import QWidget, QMainWindow, QFileDialog, QTableView, QApplication, QErrorMessage
+from PySide.QtGui import QWidget, QMainWindow, QFileDialog, QTableView, QApplication, QErrorMessage, QInputDialog
 from resources.view import Ui_View
 from src.TableModel import TableModel
 from src.model import Model
@@ -41,6 +41,8 @@ class Controller(QWidget):
         fname = QFileDialog.getOpenFileName(self.mainwindow, 'Open file...', os.getcwd())
         if not fname[0] == '':
             self.model.current_file = fname[0]
+            # Let the user specify the delimiter TODO
+            # delimiter = QInputDialog.getText(self, 'Please specify delimiter', 'Delimiter: ')
             arr = self.model.read_csv_array(fname[0], delimiter=';')
             # Creating table model,
             #   arr[0] -> header
@@ -66,12 +68,12 @@ class Controller(QWidget):
             if not fname[0] == '':
                 self.model.current_file = fname[0]
         else:
-            # QErrorMessage().showMessage("Test") # immediately closes, dont know why TODO
+            QErrorMessage().showMessage("Test") # immediately closes, dont know why TODO
             self.view.statusbar.showMessage("Please open a file first")
 
     def insert_row(self):
         """
-        Inserts a row at above the row of the currently focused element
+        Inserts a row at below the row of the currently focused element
 
         """
         self.table_view.model().insertRow(self.table_view.currentIndex().row()+1)

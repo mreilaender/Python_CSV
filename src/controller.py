@@ -36,7 +36,8 @@ class Controller(QWidget):
         self.view.insert_row.triggered.connect(self.insert_row)
         self.view.save.triggered.connect(self.save)
         self.view.save_as.triggered.connect(self.save_as)
-        self.view.actionDatabase_Credentials.triggered.connect(self.into_db)
+        self.view.actionInsert_into_databse.triggered.connect(self.into_db)
+        self.view.actionDatabase_Credentials.triggered.connect(lambda: self.database_credentials_window.exec_())
         # self.view.open.triggered.connect(lambda: self.entities.on_button_pressed(self.view.open))
         # self.view.save.triggered.connect(lambda: self.entities.on_button_pressed(self.view.save))
         # self.view.save_as.triggered.connect(lambda: self.entities.on_button_pressed(self.view.save_as))
@@ -84,8 +85,9 @@ class Controller(QWidget):
         # print(self.table_view.currentIndex().row())
 
     def into_db(self):
-        self.database_credentials_window.exec_()
-        print(self.database_credentials)
+        if self.database_credentials["hostname"] is None:
+            self.database_credentials_window.exec_()
+
 
 app = QApplication(sys.argv)
 controller = Controller()

@@ -2,10 +2,11 @@ import os
 import sys
 
 from PySide.QtGui import QWidget, QMainWindow, QFileDialog, QTableView, QApplication, QErrorMessage, QInputDialog
-from resources.view import Ui_View
+from resources.view import Ui_MainView
+from resources.db_credentials_view import Ui_DatabaseCredentials
 from src.TableModel import TableModel
 from src.model import Model
-
+from src.controller_db_credentials import DB_Credentials
 
 class Controller(QWidget):
     """
@@ -15,7 +16,7 @@ class Controller(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
 
-        self.view = Ui_View()
+        self.view = Ui_MainView()
         self.mainwindow = QMainWindow()
         self.model = Model(self.mainwindow)
 
@@ -27,15 +28,18 @@ class Controller(QWidget):
 
         # Set up everything else
         self.table_view = QTableView()
+        self.database_credentials = {"hostname": None, "username": None, "password": None, "port": None}
+        self.database_credentials_window = DB_Credentials(self.database_credentials)
 
     def setup_signals(self):
         self.view.open.triggered.connect(self.open)
         self.view.insert_row.triggered.connect(self.insert_row)
         self.view.save.triggered.connect(self.save)
         self.view.save_as.triggered.connect(self.save_as)
-        # self.view.open.triggered.connect(lambda: self.model.on_button_pressed(self.view.open))
-        # self.view.save.triggered.connect(lambda: self.model.on_button_pressed(self.view.save))
-        # self.view.save_as.triggered.connect(lambda: self.model.on_button_pressed(self.view.save_as))
+        self.view.actionDatabase_Credentials.triggered.connect(self.into_db)
+        # self.view.open.triggered.connect(lambda: self.entities.on_button_pressed(self.view.open))
+        # self.view.save.triggered.connect(lambda: self.entities.on_button_pressed(self.view.save))
+        # self.view.save_as.triggered.connect(lambda: self.entities.on_button_pressed(self.view.save_as))
 
     def open(self):
         fname = QFileDialog.getOpenFileName(self.mainwindow, 'Open file...', os.getcwd())
@@ -44,7 +48,7 @@ class Controller(QWidget):
             # Let the user specify the delimiter TODO
             # delimiter = QInputDialog.getText(self, 'Please specify delimiter', 'Delimiter: ')
             arr = self.model.read_csv_array(fname[0], delimiter=';')
-            # Creating table model,
+            # Creating table entities,
             #   arr[0] -> header
             #   arr[1:len(arr)] -> actual data
             table_model = TableModel(arr[1:len(arr)], arr[0])
@@ -78,6 +82,10 @@ class Controller(QWidget):
         """
         self.table_view.model().insertRow(self.table_view.currentIndex().row()+1)
         # print(self.table_view.currentIndex().row())
+
+    def into_db(self):
+        self.database_credentials_window.exec_()
+        print(self.database_credentials)
 
 app = QApplication(sys.argv)
 controller = Controller()

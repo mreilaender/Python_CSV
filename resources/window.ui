@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>View</class>
- <widget class="QMainWindow" name="View">
+ <class>MainView</class>
+ <widget class="QMainWindow" name="MainView">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -47,6 +47,9 @@
     </property>
     <addaction name="actionCopy_as"/>
     <addaction name="insert_row"/>
+    <addaction name="separator"/>
+    <addaction name="actionInsert_into_databse"/>
+    <addaction name="actionDatabase_Credentials"/>
    </widget>
    <widget class="QMenu" name="menuWindows">
     <property name="title">
@@ -135,13 +138,23 @@
     <string>Ctrl+I</string>
    </property>
   </action>
+  <action name="actionInsert_into_databse">
+   <property name="text">
+    <string>Insert into database</string>
+   </property>
+  </action>
+  <action name="actionDatabase_Credentials">
+   <property name="text">
+    <string>Database Credentials</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections>
   <connection>
    <sender>actionExit</sender>
    <signal>triggered()</signal>
-   <receiver>View</receiver>
+   <receiver>MainView</receiver>
    <slot>close()</slot>
    <hints>
     <hint type="sourcelabel">

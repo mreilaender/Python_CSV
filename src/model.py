@@ -7,7 +7,7 @@ from PyQt5.QtWidgets import QFileDialog
 
 class Model(object):
     """
-    MVC - Pattern: Represents the model class
+    MVC - Pattern: Represents the entities class
 
     """
     def __init__(self, mainwindow):

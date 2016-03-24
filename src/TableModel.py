@@ -34,7 +34,7 @@ class TableModel(QAbstractTableModel):
 
     def insertRow(self, row, rows=1, insert_data=""):
         """
-        Inserts a row at a given row
+        Inserts a row after a given row index
 
         :param insert_data: Placeholder to be inserted in every column
         :param row: Int Row where the row will be inserted

@@ -11,6 +11,7 @@ class DB_Credentials(QDialog, Ui_DatabaseCredentials):
 
         # Setup
         self.setup()
+        self.l_errormsg.setStyleSheet('color: red')
 
         # Setting up signals
         self.b_save.clicked.connect(self.save)
@@ -24,9 +25,21 @@ class DB_Credentials(QDialog, Ui_DatabaseCredentials):
             self.le_database.setText(self.dict["database"])
 
     def save(self):
-        self.dict["hostname"] = self.le_hostname.text()
-        self.dict["port"] = self.le_port.text()
-        self.dict["username"] = self.le_username.text()
-        self.dict["password"] = self.le_password.text()
-        self.dict["database"] = self.le_database.text()
-        self.close()
+        if self.check_fields() is not False:
+            self.dict["hostname"] = self.le_hostname.text()
+            self.dict["port"] = self.le_port.text()
+            self.dict["username"] = self.le_username.text()
+            self.dict["password"] = self.le_password.text()
+            self.dict["database"] = self.le_database.text()
+            self.close()
+
+    def check_fields(self):
+        if self.le_hostname.text() == '':
+            self.l_errormsg.setText("You have to specify a hostname")
+            return False
+        if self.le_username.text() == '':
+            self.l_errormsg.setText("You have to specify a username")
+            return False
+        if self.le_database.text() == '':
+            self.l_errormsg.setText("You have to specify a database")
+            return False

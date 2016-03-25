@@ -31,6 +31,7 @@ class DB_Credentials(QDialog, Ui_DatabaseCredentials):
             self.dict["username"] = self.le_username.text()
             self.dict["password"] = self.le_password.text()
             self.dict["database"] = self.le_database.text()
+            self.dict["complete"] = True
             self.close()
 
     def check_fields(self):

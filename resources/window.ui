@@ -50,6 +50,8 @@
     <addaction name="separator"/>
     <addaction name="actionInsert_into_databse"/>
     <addaction name="actionDatabase_Credentials"/>
+    <addaction name="actionSave_config"/>
+    <addaction name="actionLoad_Config"/>
    </widget>
    <widget class="QMenu" name="menuWindows">
     <property name="title">
@@ -146,6 +148,16 @@
   <action name="actionDatabase_Credentials">
    <property name="text">
     <string>Database Credentials</string>
+   </property>
+  </action>
+  <action name="actionSave_config">
+   <property name="text">
+    <string>Save config</string>
+   </property>
+  </action>
+  <action name="actionLoad_Config">
+   <property name="text">
+    <string>Load Config</string>
    </property>
   </action>
  </widget>

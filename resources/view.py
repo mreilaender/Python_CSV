@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'window.ui'
 #
-# Created: Thu Mar 24 20:27:20 2016
+# Created: Thu Mar 31 12:31:55 2016
 #      by: pyside-uic 0.2.15 running on PySide 1.2.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -52,6 +52,10 @@ class Ui_MainView(object):
         self.actionInsert_into_databse.setObjectName("actionInsert_into_databse")
         self.actionDatabase_Credentials = QtGui.QAction(MainView)
         self.actionDatabase_Credentials.setObjectName("actionDatabase_Credentials")
+        self.actionSave_config = QtGui.QAction(MainView)
+        self.actionSave_config.setObjectName("actionSave_config")
+        self.actionLoad_Config = QtGui.QAction(MainView)
+        self.actionLoad_Config.setObjectName("actionLoad_Config")
         self.menuFile.addAction(self.open)
         self.menuFile.addAction(self.save)
         self.menuFile.addAction(self.save_as)
@@ -62,6 +66,8 @@ class Ui_MainView(object):
         self.menuEdit.addSeparator()
         self.menuEdit.addAction(self.actionInsert_into_databse)
         self.menuEdit.addAction(self.actionDatabase_Credentials)
+        self.menuEdit.addAction(self.actionSave_config)
+        self.menuEdit.addAction(self.actionLoad_Config)
         self.menubar.addAction(self.menuFile.menuAction())
         self.menubar.addAction(self.menuEdit.menuAction())
         self.menubar.addAction(self.menuWindows.menuAction())
@@ -99,4 +105,6 @@ class Ui_MainView(object):
         self.insert_row.setShortcut(QtGui.QApplication.translate("MainView", "Ctrl+I", None, QtGui.QApplication.UnicodeUTF8))
         self.actionInsert_into_databse.setText(QtGui.QApplication.translate("MainView", "Insert into database", None, QtGui.QApplication.UnicodeUTF8))
         self.actionDatabase_Credentials.setText(QtGui.QApplication.translate("MainView", "Database Credentials", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionSave_config.setText(QtGui.QApplication.translate("MainView", "Save config", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionLoad_Config.setText(QtGui.QApplication.translate("MainView", "Load Config", None, QtGui.QApplication.UnicodeUTF8))
 

@@ -1,4 +1,5 @@
 import csv
+import json
 import os
 import traceback
 
@@ -14,14 +15,6 @@ class Model(object):
         self.mainwindow = mainwindow
         self.current_file = None
 
-    def on_button_pressed(self, button):
-        if str(button.objectName()) == "open":
-            fname = QFileDialog.getOpenFileName(self.mainwindow, 'Open file...', os.getcwd())
-        if str(button.objectName()) == "save":
-            fname = QFileDialog.getSaveFileName(self.mainwindow, 'Save file...', os.getcwd())
-        if str(button.objectName()) == "save_as":
-            fname = QFileDialog.getSaveFileName(self.mainwindow, 'Save file as...', os.getcwd())
-
     def read_csv_array(self, filename, delimiter=' ', quotechar='|'):
         # TODO implement reader with 'with' statement
         reader = csv.reader(open(filename), delimiter=delimiter)
@@ -35,3 +28,11 @@ class Model(object):
         writer = csv.writer(open(filename, mode=mode), delimiter=delimiter)
         for row in array:
             writer.writerow(row)
+
+    def save_config_into_json(self, filename, data):
+        with open(filename, 'w') as file:
+            json.dump(data, file)
+
+    def load_config_from_json(self, filename):
+        with open(filename, 'r') as file:
+            return json.load(file)

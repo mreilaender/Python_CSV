@@ -1,5 +1,6 @@
-from PySide.QtGui import QDialog
+import os
 
+from PySide.QtGui import QDialog, QFileDialog
 from resources.db_credentials_view import Ui_DatabaseCredentials
 
 
@@ -17,21 +18,21 @@ class DB_Credentials(QDialog, Ui_DatabaseCredentials):
         self.b_save.clicked.connect(self.save)
 
     def setup(self):
-        if self.dict["hostname"] is not None:
-            self.le_hostname.setText(self.dict["hostname"])
-            self.le_port.setText(self.dict["port"])
-            self.le_username.setText(self.dict["username"])
-            self.le_password.setText(self.dict["password"])
-            self.le_database.setText(self.dict["database"])
+        if self.dict['hostname'] is not None:
+            self.le_hostname.setText(self.dict['hostname'])
+            self.le_port.setText(self.dict['port'])
+            self.le_username.setText(self.dict['username'])
+            self.le_password.setText(self.dict['password'])
+            self.le_database.setText(self.dict['database'])
 
     def save(self):
         if self.check_fields() is not False:
-            self.dict["hostname"] = self.le_hostname.text()
-            self.dict["port"] = self.le_port.text()
-            self.dict["username"] = self.le_username.text()
-            self.dict["password"] = self.le_password.text()
-            self.dict["database"] = self.le_database.text()
-            self.dict["complete"] = True
+            self.dict['hostname'] = self.le_hostname.text()
+            self.dict['port'] = self.le_port.text()
+            self.dict['username'] = self.le_username.text()
+            self.dict['password'] = self.le_password.text()
+            self.dict['database'] = self.le_database.text()
+            self.dict['complete'] = True
             self.close()
 
     def check_fields(self):
@@ -44,3 +45,6 @@ class DB_Credentials(QDialog, Ui_DatabaseCredentials):
         if self.le_database.text() == '':
             self.l_errormsg.setText("You have to specify a database")
             return False
+
+    def showEvent(self, event):
+        self.setup()

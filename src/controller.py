@@ -1,12 +1,17 @@
+import json
 import os
 import sys
 
 from PySide.QtGui import QWidget, QMainWindow, QFileDialog, QTableView, QApplication, QErrorMessage, QInputDialog
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+
 from resources.view import Ui_MainView
-from resources.db_credentials_view import Ui_DatabaseCredentials
 from src.TableModel import TableModel
 from src.model import Model
 from src.controller_db_credentials import DB_Credentials
+from src.entities.tables import Partei
+
 
 class Controller(QWidget):
     """
@@ -28,8 +33,15 @@ class Controller(QWidget):
 
         # Set up everything else
         self.table_view = QTableView()
-        self.database_credentials = {"hostname": None, "username": None, "password": None, "port": None}
-        self.database_credentials_window = DB_Credentials(self.database_credentials)
+        self.database_credentials = {'hostname': '', 'port': '', 'username': '', 'password': '', 'database': '',
+                                     'complete': False}
+        self.indeces = {'T': None, 'WV': None, 'WK': None, 'BZ': None, 'SPR': None,
+                        'WBER': None, ' ABG.': None, 'UNG.': None, 'SPOE': None,
+                        'FPOE': None, 'OEVP': None, 'GRUE': None, 'NEOS': None,
+                        'WWW': None, 'ANDAS': None, 'GFW': None, 'SLP': None,
+                        'WIFF': None, 'M': None, 'FREIE': None}
+        self.database_credentials_window = DB_Credentials(self.database_credentials, self.mainwindow)
+        self.session = None
 
     def setup_signals(self):
         self.view.open.triggered.connect(self.open)
@@ -37,6 +49,8 @@ class Controller(QWidget):
         self.view.save.triggered.connect(self.save)
         self.view.save_as.triggered.connect(self.save_as)
         self.view.actionInsert_into_databse.triggered.connect(self.into_db)
+        self.view.actionSave_config.triggered.connect(self.save_config_as)
+        self.view.actionLoad_Config.triggered.connect(self.load_config_from_json)
         self.view.actionDatabase_Credentials.triggered.connect(lambda: self.database_credentials_window.exec_())
         # self.view.open.triggered.connect(lambda: self.entities.on_button_pressed(self.view.open))
         # self.view.save.triggered.connect(lambda: self.entities.on_button_pressed(self.view.save))
@@ -76,6 +90,18 @@ class Controller(QWidget):
             # QErrorMessage().showMessage("Test") # immediately closes, dont know why TODO
             self.view.statusbar.showMessage("Please open a file first")
 
+    def save_config_as(self):
+        fname = QFileDialog.getSaveFileName(self.mainwindow, 'Save file...', os.getcwd(),
+                                            'JavaScript Object Notation (*.json)')
+        data = json.loads(json.dumps(self.database_credentials_window.dict))
+        self.model.save_config_into_json(fname[0], data)
+
+    def load_config_from_json(self):
+        fname = QFileDialog.getOpenFileName(self.mainwindow, 'Open file...', os.getcwd(),
+                                            'JavaScript Object Notation (*.json)')
+        self.database_credentials_window.dict = self.model.load_config_from_json(fname[0])
+        print(self.model.load_config_from_json(fname[0]))
+
     def insert_row(self):
         """
         Inserts a row at below the row of the currently focused element
@@ -85,11 +111,44 @@ class Controller(QWidget):
         # print(self.table_view.currentIndex().row())
 
     def into_db(self):
-        if self.database_credentials["hostname"] is None:
+        engine = None
+        if self.database_credentials["hostname"] == '':
             self.database_credentials_window.exec_()
+            if self.database_credentials["complete"] is False:
+                return False
+        if self.database_credentials["port"] != '':
+            engine = create_engine("mysql+mysqlconnector://%s:%s@%s:%s/%s" %
+                                   (self.database_credentials['username'],
+                                    self.database_credentials['password'],
+                                    self.database_credentials['hostname'],
+                                    self.database_credentials['port'],
+                                    self.database_credentials['database'])
+                                   )
+        else:
+            engine = create_engine("mysql+mysqlconnector://%s:%s@%s/%s" %
+                                   (self.database_credentials['username'],
+                                    self.database_credentials['password'],
+                                    self.database_credentials['hostname'],
+                                    self.database_credentials['database'])
+                                   )
+        Session = sessionmaker(bind=engine)
+        self.session = Session()
+        """
+        parteien = self.session.query(Partei).all()
+        for partei in parteien:
+            print(partei.bezeichnung)
+        if self.table_view is not None:
+            arr = self.table_view.model().get_data_as_2d_array()
+            for subelement in arr[0]:
+                pass
+        """
 
+    def exit_handler(self):
+        if self.session is not None:
+            self.session.close()
 
 app = QApplication(sys.argv)
 controller = Controller()
+app.aboutToQuit.connect(controller.exit_handler)
 controller.mainwindow.show()
 sys.exit(app.exec_())

@@ -33,14 +33,18 @@ class Controller(QWidget):
 
         # Set up everything else
         self.table_view = QTableView()
-        self.database_credentials = {'hostname': '', 'port': '', 'username': '', 'password': '', 'database': '',
-                                     'complete': False}
         self.indeces = {'T': None, 'WV': None, 'WK': None, 'BZ': None, 'SPR': None,
                         'WBER': None, ' ABG.': None, 'UNG.': None, 'SPOE': None,
                         'FPOE': None, 'OEVP': None, 'GRUE': None, 'NEOS': None,
                         'WWW': None, 'ANDAS': None, 'GFW': None, 'SLP': None,
                         'WIFF': None, 'M': None, 'FREIE': None}
-        self.database_credentials_window = DB_Credentials(self.database_credentials, self.mainwindow)
+        self.database_credentials = DB_Credentials()
+
+        # Just for testing purposes, loading personal config file
+        data = self.model.load_config_from_json(
+            "C:\\Users\\mreilaender\\PycharmProjects\\SEW_wahl_analyse\\resources\\credentials.json")
+        self.database_credentials.from_dict(data)
+        self.database_credentials.update()
         self.session = None
 
     def setup_signals(self):
@@ -51,7 +55,7 @@ class Controller(QWidget):
         self.view.actionInsert_into_databse.triggered.connect(self.into_db)
         self.view.actionSave_config.triggered.connect(self.save_config_as)
         self.view.actionLoad_Config.triggered.connect(self.load_config_from_json)
-        self.view.actionDatabase_Credentials.triggered.connect(lambda: self.database_credentials_window.exec_())
+        self.view.actionDatabase_Credentials.triggered.connect(lambda: self.database_credentials.exec_())
         # self.view.open.triggered.connect(lambda: self.entities.on_button_pressed(self.view.open))
         # self.view.save.triggered.connect(lambda: self.entities.on_button_pressed(self.view.save))
         # self.view.save_as.triggered.connect(lambda: self.entities.on_button_pressed(self.view.save_as))
@@ -93,14 +97,14 @@ class Controller(QWidget):
     def save_config_as(self):
         fname = QFileDialog.getSaveFileName(self.mainwindow, 'Save file...', os.getcwd(),
                                             'JavaScript Object Notation (*.json)')
-        data = json.loads(json.dumps(self.database_credentials_window.dict))
+        data = json.loads(json.dumps(self.database_credentials.to_dict()))
         self.model.save_config_into_json(fname[0], data)
 
     def load_config_from_json(self):
         fname = QFileDialog.getOpenFileName(self.mainwindow, 'Open file...', os.getcwd(),
                                             'JavaScript Object Notation (*.json)')
-        self.database_credentials_window.dict = self.model.load_config_from_json(fname[0])
-        print(self.model.load_config_from_json(fname[0]))
+        self.database_credentials.from_dict(self.model.load_config_from_json(fname[0]))
+        self.database_credentials.update()
 
     def insert_row(self):
         """
@@ -112,37 +116,37 @@ class Controller(QWidget):
 
     def into_db(self):
         engine = None
-        if self.database_credentials["hostname"] == '':
-            self.database_credentials_window.exec_()
-            if self.database_credentials["complete"] is False:
+        if self.database_credentials.hostname == '':
+            self.database_credentials.exec_()
+            if self.database_credentials.complete is False:
                 return False
-        if self.database_credentials["port"] != '':
+        if self.database_credentials.port != '':
             engine = create_engine("mysql+mysqlconnector://%s:%s@%s:%s/%s" %
-                                   (self.database_credentials['username'],
-                                    self.database_credentials['password'],
-                                    self.database_credentials['hostname'],
-                                    self.database_credentials['port'],
-                                    self.database_credentials['database'])
+                                   (self.database_credentials.username,
+                                    self.database_credentials.password,
+                                    self.database_credentials.hostname,
+                                    self.database_credentials.port,
+                                    self.database_credentials.database)
                                    )
         else:
             engine = create_engine("mysql+mysqlconnector://%s:%s@%s/%s" %
-                                   (self.database_credentials['username'],
-                                    self.database_credentials['password'],
-                                    self.database_credentials['hostname'],
-                                    self.database_credentials['database'])
+                                   (self.database_credentials.username,
+                                    self.database_credentials.password,
+                                    self.database_credentials.hostname,
+                                    self.database_credentials.database)
                                    )
         Session = sessionmaker(bind=engine)
         self.session = Session()
-        """
+
         parteien = self.session.query(Partei).all()
         for partei in parteien:
             print(partei.bezeichnung)
+        """
         if self.table_view is not None:
             arr = self.table_view.model().get_data_as_2d_array()
             for subelement in arr[0]:
                 pass
         """
-
     def exit_handler(self):
         if self.session is not None:
             self.session.close()

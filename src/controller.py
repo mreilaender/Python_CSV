@@ -42,7 +42,7 @@ class Controller(QWidget):
 
         # Just for testing purposes, loading personal config file
         data = self.model.load_config_from_json(
-            "C:\\Users\\mreilaender\\PycharmProjects\\SEW_wahl_analyse\\resources\\credentials.json")
+            "..\\resources\\credentials.json")
         self.database_credentials.from_dict(data)
         self.database_credentials.update()
         self.session = None
@@ -138,15 +138,21 @@ class Controller(QWidget):
         Session = sessionmaker(bind=engine)
         self.session = Session()
 
-        parteien = self.session.query(Partei).all()
-        for partei in parteien:
-            print(partei.bezeichnung)
-        """
-        if self.table_view is not None:
-            arr = self.table_view.model().get_data_as_2d_array()
-            for subelement in arr[0]:
-                pass
-        """
+        table_model = self.table_view.model()
+        if table_model is not None:
+            arr = table_model.get_data_as_2d_array()[0]
+            for item in arr:
+                item = item.replace(" ", "")
+                # TODO in db eintragen
+
+            """
+            parteien = self.session.query(Partei).all()
+            for partei in parteien:
+                print(partei.bezeichnung)
+            """
+        else:
+            self.view.statusbar.showMessage("No data to process. Please load a file first")
+
     def exit_handler(self):
         if self.session is not None:
             self.session.close()

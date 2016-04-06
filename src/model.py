@@ -1,9 +1,5 @@
 import csv
 import json
-import os
-import traceback
-
-from PyQt5.QtWidgets import QFileDialog
 
 
 class Model(object):

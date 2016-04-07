@@ -112,7 +112,6 @@ class Controller(QWidget):
 
         """
         self.table_view.model().insertRow(self.table_view.currentIndex().row()+1)
-        # print(self.table_view.currentIndex().row())
 
     def into_db(self):
         engine = None

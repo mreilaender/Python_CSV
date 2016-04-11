@@ -10,7 +10,7 @@ from resources.view import Ui_MainView
 from src.TableModel import TableModel
 from src.model import Model
 from src.controller_db_credentials import DB_Credentials
-from src.entities.tables import Partei
+from src.entities.tables import Partei, Bezirk
 
 
 class Controller(QWidget):
@@ -33,11 +33,6 @@ class Controller(QWidget):
 
         # Set up everything else
         self.table_view = QTableView()
-        self.indeces = {'T': None, 'WV': None, 'WK': None, 'BZ': None, 'SPR': None,
-                        'WBER': None, ' ABG.': None, 'UNG.': None, 'SPOE': None,
-                        'FPOE': None, 'OEVP': None, 'GRUE': None, 'NEOS': None,
-                        'WWW': None, 'ANDAS': None, 'GFW': None, 'SLP': None,
-                        'WIFF': None, 'M': None, 'FREIE': None}
         self.database_credentials = DB_Credentials()
 
         # Just for testing purposes, loading personal config file
@@ -136,10 +131,10 @@ class Controller(QWidget):
                                    )
         Session = sessionmaker(bind=engine)
         self.session = Session()
-
         table_model = self.table_view.model()
         if table_model is not None:
             arr = table_model.get_data_as_2d_array()[0]
+            self.find_indeces(arr)
             for item in arr:
                 item = item.replace(" ", "")
                 # TODO in db eintragen
@@ -151,6 +146,15 @@ class Controller(QWidget):
             """
         else:
             self.view.statusbar.showMessage("No data to process. Please load a file first")
+
+    def print_table(self, table):
+        tables = self.session.query(table).all()
+        columns = [m.key for m in tables[1].__table__.columns]
+        for item in tables:
+            print("------------------------------------------------------")
+            for column in columns:
+                print("%s: %s" % (column, item.__getattribute__(column)))
+            print("------------------------------------------------------")
 
     def exit_handler(self):
         if self.session is not None:

@@ -41,10 +41,10 @@ class Model(object):
         :return:
         """
         indeces = {'T': None, 'WV': None, 'WK': None, 'BZ': None, 'SPR': None,
-                        'WBER': None, ' ABG.': None, 'UNG.': None, 'SPOE': None,
+                        'WBER': None, 'ABG.': None, 'UNG.': None, 'SPOE': None,
                         'FPOE': None, 'OEVP': None, 'GRUE': None, 'NEOS': None,
                         'WWW': None, 'ANDAS': None, 'GFW': None, 'SLP': None,
                         'WIFF': None, 'M': None, 'FREIE': None}
         for index, item in enumerate(header):
-            indeces[item.replace(" ", "")] = index
+            indeces[item] = index
         return indeces

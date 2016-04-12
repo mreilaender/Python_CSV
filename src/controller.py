@@ -2,15 +2,12 @@ import json
 import os
 import sys
 
-from PySide.QtGui import QWidget, QMainWindow, QFileDialog, QTableView, QApplication, QErrorMessage, QInputDialog
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-
+from PySide.QtCore import Slot
+from PySide.QtGui import QWidget, QMainWindow, QFileDialog, QTableView, QApplication
 from resources.view import Ui_MainView
 from src.TableModel import TableModel
 from src.model import Model
 from src.controller_db_credentials import DB_Credentials
-from src.entities.tables import Partei, Bezirk
 
 
 class Controller(QWidget):
@@ -41,6 +38,9 @@ class Controller(QWidget):
         self.database_credentials.from_dict(data)
         self.database_credentials.update()
         self.session = None
+        # Loading example Json -> resources/sample.json
+        self.load_example_json()
+        self.progress_bar = None
 
     def setup_signals(self):
         self.view.open.triggered.connect(self.open)
@@ -50,12 +50,18 @@ class Controller(QWidget):
         self.view.actionInsert_into_databse.triggered.connect(self.into_db)
         self.view.actionSave_config.triggered.connect(self.save_config_as)
         self.view.actionLoad_Config.triggered.connect(self.load_config_from_json)
+        self.model.updateProgress.connect(self.set_progress)
         self.view.actionDatabase_Credentials.triggered.connect(lambda: self.database_credentials.exec_())
         # self.view.open.triggered.connect(lambda: self.entities.on_button_pressed(self.view.open))
         # self.view.save.triggered.connect(lambda: self.entities.on_button_pressed(self.view.save))
         # self.view.save_as.triggered.connect(lambda: self.entities.on_button_pressed(self.view.save_as))
 
     def open(self):
+        """
+        Opens a file dialog to open a json file
+
+        :return:
+        """
         fname = QFileDialog.getOpenFileName(self.mainwindow, 'Open file...', os.getcwd())
         if not fname[0] == '':
             self.model.current_file = fname[0]
@@ -68,6 +74,14 @@ class Controller(QWidget):
             table_model = TableModel(arr[1:len(arr)], arr[0])
             self.table_view.setModel(table_model)
             self.view.verticalLayout.addWidget(self.table_view)
+
+    def load_example_json(self):
+        fname = os.path.abspath("../resources/sample.csv")
+        self.model.current_file = fname
+        arr = self.model.read_csv_array(fname, delimiter=';')
+        table_model = TableModel(arr[1:len(arr)], arr[0])
+        self.table_view.setModel(table_model)
+        self.view.verticalLayout.addWidget(self.table_view)
 
     def save(self):
         if self.table_view.model() is not None:
@@ -115,37 +129,22 @@ class Controller(QWidget):
             if self.database_credentials.complete is False:
                 return False
         if self.database_credentials.port != '':
-            engine = create_engine("mysql+mysqlconnector://%s:%s@%s:%s/%s" %
-                                   (self.database_credentials.username,
-                                    self.database_credentials.password,
-                                    self.database_credentials.hostname,
-                                    self.database_credentials.port,
-                                    self.database_credentials.database)
-                                   )
+            self.model.create_session(self.database_credentials.username, self.database_credentials.password,
+                                      self.database_credentials.hostname, self.database_credentials.database,
+                                      port=self.database_credentials.port)
         else:
-            engine = create_engine("mysql+mysqlconnector://%s:%s@%s/%s" %
-                                   (self.database_credentials.username,
-                                    self.database_credentials.password,
-                                    self.database_credentials.hostname,
-                                    self.database_credentials.database)
-                                   )
-        Session = sessionmaker(bind=engine)
-        self.session = Session()
+            self.model.create_session(self.database_credentials.username, self.database_credentials.password,
+                                      self.database_credentials.hostname, self.database_credentials.database)
+
         table_model = self.table_view.model()
         if table_model is not None:
-            arr = table_model.get_data_as_2d_array()[0]
-            self.find_indeces(arr)
-            for item in arr:
-                item = item.replace(" ", "")
-                # TODO in db eintragen
-
-            """
-            parteien = self.session.query(Partei).all()
-            for partei in parteien:
-                print(partei.bezeichnung)
-            """
+            self.model.insert_into_db(table_model, self.progress_bar)
         else:
             self.view.statusbar.showMessage("No data to process. Please load a file first")
+
+    @Slot(int)
+    def set_progress(self, progress):
+        self.progress_bar.setValue(progress)
 
     def print_table(self, table):
         tables = self.session.query(table).all()
@@ -158,7 +157,7 @@ class Controller(QWidget):
 
     def exit_handler(self):
         if self.session is not None:
-            self.session.close()
+            self.model.exit_handler()
 
 app = QApplication(sys.argv)
 controller = Controller()

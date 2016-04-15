@@ -2,15 +2,16 @@ import json
 import os
 import sys
 
-from PySide.QtCore import Slot
-from PySide.QtGui import QWidget, QMainWindow, QFileDialog, QTableView, QApplication
+from PySide.QtGui import QMainWindow, QFileDialog, QTableView, QApplication, QInputDialog
 from resources.view import Ui_MainView
 from src.TableModel import TableModel
 from src.model import Model
 from src.controller_db_credentials import DB_Credentials
+from util.CSV import CSV
+from util.JSON import JSON
 
 
-class Controller(QWidget):
+class Controller(QMainWindow):
     """
     MVC Pattern: Represents the controller class
 
@@ -19,11 +20,10 @@ class Controller(QWidget):
         super().__init__(parent)
 
         self.view = Ui_MainView()
-        self.mainwindow = QMainWindow()
-        self.model = Model(self.mainwindow)
+        self.model = Model()
 
-        self.view.setupUi(self.mainwindow)
-        self.setFixedSize(620, 250)
+        self.view.setupUi(self)
+        self.setFixedSize(800, 600)
 
         # Set up action handler
         self.setup_signals()
@@ -31,16 +31,15 @@ class Controller(QWidget):
         # Set up everything else
         self.table_view = QTableView()
         self.database_credentials = DB_Credentials()
+        self.table_model = TableModel(data_in=[], header=[])
 
         # Just for testing purposes, loading personal config file
-        data = self.model.load_config_from_json(
-            "..\\resources\\credentials.json")
+        data = JSON.load_config_from_json("..\\resources\\credentials.json")
         self.database_credentials.from_dict(data)
         self.database_credentials.update()
         self.session = None
         # Loading example Json -> resources/sample.json
         self.load_example_json()
-        self.progress_bar = None
 
     def setup_signals(self):
         self.view.open.triggered.connect(self.open)
@@ -50,7 +49,8 @@ class Controller(QWidget):
         self.view.actionInsert_into_databse.triggered.connect(self.into_db)
         self.view.actionSave_config.triggered.connect(self.save_config_as)
         self.view.actionLoad_Config.triggered.connect(self.load_config_from_json)
-        self.model.updateProgress.connect(self.set_progress)
+        self.view.actionNew.triggered.connect(self.new)
+        self.model.tableModelChanged.connect(self.model.table_model_changed)
         self.view.actionDatabase_Credentials.triggered.connect(lambda: self.database_credentials.exec_())
         # self.view.open.triggered.connect(lambda: self.entities.on_button_pressed(self.view.open))
         # self.view.save.triggered.connect(lambda: self.entities.on_button_pressed(self.view.save))
@@ -62,32 +62,39 @@ class Controller(QWidget):
 
         :return:
         """
-        fname = QFileDialog.getOpenFileName(self.mainwindow, 'Open file...', os.getcwd())
+        fname = QFileDialog.getOpenFileName(self, 'Open file...', os.getcwd(), filter="CSV-File (*.csv)")
         if not fname[0] == '':
             self.model.current_file = fname[0]
             # Let the user specify the delimiter TODO
-            # delimiter = QInputDialog.getText(self, 'Please specify delimiter', 'Delimiter: ')
-            arr = self.model.read_csv_array(fname[0], delimiter=';')
-            # Creating table entities,
-            #   arr[0] -> header
-            #   arr[1:len(arr)] -> actual data
-            table_model = TableModel(arr[1:len(arr)], arr[0])
-            self.table_view.setModel(table_model)
+            arr = []
+            delimiter = QInputDialog.getText(self, 'Please specify delimiter', 'Delimiter: ')
+            if len(delimiter[0]) > 0:
+                arr = CSV.read_csv_array(fname[0], delimiter=delimiter[0])
+            else:
+                arr = CSV.read_csv_array(fname[0], delimiter=';')
+            self.table_model.replace_data(arr[1:len(arr)], arr[0])
+            self.table_view.setModel(self.table_model)
+            self.table_model.set_data_changed_signal(self.model.tableModelChanged)
             self.view.verticalLayout.addWidget(self.table_view)
 
     def load_example_json(self):
+        """
+        Loads the example json file located in resources. Only for testing purposes
+
+        """
         fname = os.path.abspath("../resources/sample.csv")
         self.model.current_file = fname
-        arr = self.model.read_csv_array(fname, delimiter=';')
-        table_model = TableModel(arr[1:len(arr)], arr[0])
-        self.table_view.setModel(table_model)
+        arr = CSV.read_csv_array(fname, delimiter=';')
+        self.table_model.replace_all_data(data=arr[1:len(arr)], header=arr[0])
+        self.table_view.setModel(self.table_model)
+        self.table_model.set_data_changed_signal(self.model.tableModelChanged)
         self.view.verticalLayout.addWidget(self.table_view)
 
     def save(self):
         if self.table_view.model() is not None:
             if self.model.current_file is not None:
                 arr = self.table_view.model().get_data_as_2d_array()
-                self.model.save_csv_2darray(arr, self.model.current_file, delimiter=';', mode='w')
+                CSV.save_csv_2darray(arr, self.model.current_file, delimiter=';', mode='w')
             else:
                 self.save_as()
         else:
@@ -96,7 +103,7 @@ class Controller(QWidget):
 
     def save_as(self):
         if self.table_view.model() is not None:
-            fname = QFileDialog.getSaveFileName(self.mainwindow, 'Saving file...', os.getcwd())
+            fname = QFileDialog.getSaveFileName(self, 'Saving file...', os.getcwd())
             if not fname[0] == '':
                 self.model.current_file = fname[0]
         else:
@@ -104,15 +111,15 @@ class Controller(QWidget):
             self.view.statusbar.showMessage("Please open a file first")
 
     def save_config_as(self):
-        fname = QFileDialog.getSaveFileName(self.mainwindow, 'Save file...', os.getcwd(),
+        fname = QFileDialog.getSaveFileName(self, 'Save file...', os.getcwd(),
                                             'JavaScript Object Notation (*.json)')
         data = json.loads(json.dumps(self.database_credentials.to_dict()))
-        self.model.save_config_into_json(fname[0], data)
+        JSON.save_config_into_json(fname[0], data)
 
     def load_config_from_json(self):
-        fname = QFileDialog.getOpenFileName(self.mainwindow, 'Open file...', os.getcwd(),
+        fname = QFileDialog.getOpenFileName(self, 'Open file...', os.getcwd(),
                                             'JavaScript Object Notation (*.json)')
-        self.database_credentials.from_dict(self.model.load_config_from_json(fname[0]))
+        self.database_credentials.from_dict(JSON.load_config_from_json(fname[0]))
         self.database_credentials.update()
 
     def insert_row(self):
@@ -120,7 +127,7 @@ class Controller(QWidget):
         Inserts a row at below the row of the currently focused element
 
         """
-        self.table_view.model().insertRow(self.table_view.currentIndex().row()+1)
+        self.table_model.insertRow(self.table_view.currentIndex().row()+1)
 
     def into_db(self):
         engine = None
@@ -136,15 +143,10 @@ class Controller(QWidget):
             self.model.create_session(self.database_credentials.username, self.database_credentials.password,
                                       self.database_credentials.hostname, self.database_credentials.database)
 
-        table_model = self.table_view.model()
-        if table_model is not None:
-            self.model.insert_into_db(table_model, self.progress_bar)
+        if self.table_model is not None:
+            self.model.insert_into_db(self.table_model, self.progress_bar)
         else:
             self.view.statusbar.showMessage("No data to process. Please load a file first")
-
-    @Slot(int)
-    def set_progress(self, progress):
-        self.progress_bar.setValue(progress)
 
     def print_table(self, table):
         tables = self.session.query(table).all()
@@ -155,6 +157,13 @@ class Controller(QWidget):
                 print("%s: %s" % (column, item.__getattribute__(column)))
             print("------------------------------------------------------")
 
+    def new(self):
+        self.table_model.replace_all_data(data=[], header=['T', 'WV', 'WK', 'BZ', 'SPR', 'WBER', 'ABG.', 'UNG.', 'SPOE', 'FPOE', 'OEVP', 'GRUE', 'NEOS', 'WWW', 'ANDAS', 'GFW', 'SLP', 'WIFF', 'M', 'FREIE'])
+
+    def show_window(self):
+        self.show()
+        self.raise_()
+
     def exit_handler(self):
         if self.session is not None:
             self.model.exit_handler()
@@ -162,5 +171,6 @@ class Controller(QWidget):
 app = QApplication(sys.argv)
 controller = Controller()
 app.aboutToQuit.connect(controller.exit_handler)
-controller.mainwindow.show()
+controller.show_window()
+# controller.mainwindow.show()
 sys.exit(app.exec_())

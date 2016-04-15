@@ -1,13 +1,9 @@
-import csv
-import json
-import os
-
-from PySide.QtCore import Signal, QObject
-from PySide.QtGui import qApp
+from PyQt4.QtCore import QVariant, QAbstractTableModel
+from PySide.QtCore import Signal, QObject, QModelIndex, Slot
+from PySide.QtGui import QUndoStack
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-
-from src.entities.tables import Sprengel, Bezirk, Wahlkreis, Partei, Stimmen
+from src.entities.tables import Sprengel, Partei, Stimmen
 
 
 class Model(QObject):
@@ -16,37 +12,17 @@ class Model(QObject):
 
     """
     updateProgress = Signal(int)
+    tableModelChanged = Signal(QAbstractTableModel, QModelIndex, QVariant, QVariant)
 
-    def __init__(self, mainwindow):
+    def __init__(self):
         super(Model, self).__init__()
-        self.mainwindow = mainwindow
         self.current_file = None
         self.session = None
 
         # Setting up SQL relevant stuff
         self.wahl_nummer = 1
 
-    def read_csv_array(self, filename, delimiter=' ', quotechar='|'):
-        # TODO implement reader with 'with' statement
-        reader = csv.reader(open(filename), delimiter=delimiter)
-        data = []
-        for row in reader:
-            data.append(row)
-        return data
-
-    def save_csv_2darray(self, array, filename, delimiter=' ', mode='x'):
-        # TODO implement reader with 'with' statement
-        writer = csv.writer(open(filename, mode=mode), delimiter=delimiter)
-        for row in array:
-            writer.writerow(row)
-
-    def save_config_into_json(self, filename, data):
-        with open(filename, 'w') as file:
-            json.dump(data, file)
-
-    def load_config_from_json(self, filename):
-        with open(filename, 'r') as file:
-            return json.load(file)
+        self.undostack = QUndoStack()
 
     def find_indeces(self, header):
         """
@@ -78,7 +54,7 @@ class Model(QObject):
                                (username, password, hostname, port, database))
         if self.session is not None:
             self.session.close()
-        Session = sessionmaker(bind=engine)
+        Session = sessionmaker(bind=engine, autoflush=False)
         self.session = Session()
 
     def insert_into_db(self, table_model, progress_bar):
@@ -96,7 +72,7 @@ class Model(QObject):
             progress = 1
             tmp = []
             for data in arr[1:]:
-                print("%f " % (progress/(len(arr)-1)*100))
+                print("%f" % (progress/(len(arr)-1)*100) + " %")
                 # Sprengel
                 sprengel = Sprengel()
                 sprengel.nummer = data[indeces['SPR']]
@@ -121,7 +97,25 @@ class Model(QObject):
                         raise Exception("Wrong CSV Format, expected Column T to be 4 and Column WV to be 1")
                 self.session.add(sprengel)
                 progress += 1
-            self.session.commit()
+            try:
+                print("Sending to database...")
+                self.session.commit()
+            except Exception as e:
+                print("Could'nt insert into database, there are duplicate entries.")
+
+    @Slot(QAbstractTableModel, QModelIndex, QVariant, QVariant)
+    def table_model_changed(self, table_model, index, old, new):
+        """
+        Will be executed when data in the table model has been changed
+
+        :param table_model: TableModel where data has been changed
+        :param index: QModelIndex
+        :param old: QVariant Old TableModel data
+        :param new: QVariant New TableModel data
+        """
+        # self.undostack.push(TableModelCommand(table_model, index, old, new))
+        print("TableModel changed at [%s, %s]" % (index.row(), index.column()))
+        print("Old Value: %s | New Value: %s" % (old, new))
 
     def exit_handler(self):
         if self.session is not None:

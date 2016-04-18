@@ -1,5 +1,5 @@
-from PyQt4.QtCore import QVariant, QAbstractTableModel
-from PySide.QtCore import Signal, QObject, QModelIndex, Slot
+import pyperclip
+from PySide.QtCore import Signal, QObject, QModelIndex, Slot, QAbstractTableModel
 from PySide.QtGui import QUndoStack
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -13,8 +13,9 @@ class Model(QObject):
     MVC - Pattern: Represents the entities class
 
     """
-    updateProgress = Signal(int)
-    tableModelChanged = Signal(QAbstractTableModel, QModelIndex, QVariant, QVariant)
+    updateProgressSignal = Signal(int)
+    tableModelChangedSignal = Signal(QAbstractTableModel, QModelIndex, str, str)
+    copySignal = Signal(QAbstractTableModel, QModelIndex)
 
     def __init__(self):
         super(Model, self).__init__()
@@ -105,7 +106,7 @@ class Model(QObject):
             except Exception as e:
                 print("Could'nt insert into database, there are duplicate entries.")
 
-    @Slot(QAbstractTableModel, QModelIndex, QVariant, QVariant)
+    @Slot(QAbstractTableModel, QModelIndex, str, str)
     def table_model_changed(self, table_model, index, old, new):
         """
         Will be executed when data in the table model has been changed
@@ -120,12 +121,14 @@ class Model(QObject):
         # print("Old Value: %s | New Value: %s" % (old, new))
 
     def undo(self):
-        # print("undoing")
         self.undostack.undo()
 
     def redo(self):
-        # print("redoing")
         self.undostack.redo()
+
+    def copy(self, table_model, index):
+        pyperclip.copy(table_model)
+        print("Current index: [%s, %s]" % (index.row(), index.column()))
 
     def exit_handler(self):
         if self.session is not None:

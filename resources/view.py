@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'window.ui'
 #
-# Created: Mon Apr 18 20:45:27 2016
+# Created: Mon Apr 18 20:59:48 2016
 #      by: pyside-uic 0.2.15 running on PySide 1.2.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -61,6 +61,12 @@ class Ui_MainView(object):
         self.actionUndo.setObjectName("actionUndo")
         self.actionRedo = QtGui.QAction(MainView)
         self.actionRedo.setObjectName("actionRedo")
+        self.actionCopy = QtGui.QAction(MainView)
+        self.actionCopy.setObjectName("actionCopy")
+        self.actionCut = QtGui.QAction(MainView)
+        self.actionCut.setObjectName("actionCut")
+        self.actionPaste = QtGui.QAction(MainView)
+        self.actionPaste.setObjectName("actionPaste")
         self.menuFile.addAction(self.open)
         self.menuFile.addAction(self.save)
         self.menuFile.addAction(self.save_as)
@@ -69,7 +75,10 @@ class Ui_MainView(object):
         self.menuEdit.addAction(self.actionUndo)
         self.menuEdit.addAction(self.actionRedo)
         self.menuEdit.addSeparator()
+        self.menuEdit.addAction(self.actionCut)
+        self.menuEdit.addAction(self.actionCopy)
         self.menuEdit.addAction(self.actionCopy_as)
+        self.menuEdit.addAction(self.actionPaste)
         self.menuEdit.addAction(self.insert_row)
         self.menuEdit.addSeparator()
         self.menuEdit.addAction(self.actionInsert_into_databse)
@@ -119,4 +128,10 @@ class Ui_MainView(object):
         self.actionUndo.setShortcut(QtGui.QApplication.translate("MainView", "Ctrl+Z", None, QtGui.QApplication.UnicodeUTF8))
         self.actionRedo.setText(QtGui.QApplication.translate("MainView", "Redo", None, QtGui.QApplication.UnicodeUTF8))
         self.actionRedo.setShortcut(QtGui.QApplication.translate("MainView", "Ctrl+Y", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionCopy.setText(QtGui.QApplication.translate("MainView", "Copy", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionCopy.setShortcut(QtGui.QApplication.translate("MainView", "Ctrl+C", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionCut.setText(QtGui.QApplication.translate("MainView", "Cut", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionCut.setShortcut(QtGui.QApplication.translate("MainView", "Ctrl+X", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionPaste.setText(QtGui.QApplication.translate("MainView", "Paste", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionPaste.setShortcut(QtGui.QApplication.translate("MainView", "Ctrl+V", None, QtGui.QApplication.UnicodeUTF8))
 

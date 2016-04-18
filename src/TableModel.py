@@ -8,6 +8,7 @@ class TableModel(QAbstractTableModel):
         self.data_in = data_in
         self.header = header
         self.data_changed_signal = None
+        self.copy_signal = None
 
     def set_data_changed_signal(self, signal):
         """
@@ -19,7 +20,7 @@ class TableModel(QAbstractTableModel):
 
     def replace_all_data(self, data=None, header=None):
         """
-        Replaces header and data
+        Replaces header and data (if specified)
 
         :param data: 2D Array
         :param header: Array

@@ -50,9 +50,10 @@ class Controller(QMainWindow):
         self.view.actionSave_config.triggered.connect(self.save_config_as)
         self.view.actionLoad_Config.triggered.connect(self.load_config_from_json)
         self.view.actionNew.triggered.connect(self.new)
-        self.model.tableModelChanged.connect(self.model.table_model_changed)
+        self.model.tableModelChangedSignal.connect(self.model.table_model_changed)
         self.view.actionUndo.triggered.connect(self.model.undo)
         self.view.actionRedo.triggered.connect(self.model.redo)
+        self.view.actionCopy.triggered.connect(lambda: self.model.copy(self.model, self.table_view.currentIndex()))
         self.view.actionDatabase_Credentials.triggered.connect(lambda: self.database_credentials.exec_())
         # self.view.open.triggered.connect(lambda: self.entities.on_button_pressed(self.view.open))
         # self.view.save.triggered.connect(lambda: self.entities.on_button_pressed(self.view.save))
@@ -76,7 +77,7 @@ class Controller(QMainWindow):
                 arr = CSV.read_csv_array(fname[0], delimiter=';')
             self.table_model.replace_data(arr[1:len(arr)], arr[0])
             self.table_view.setModel(self.table_model)
-            self.table_model.set_data_changed_signal(self.model.tableModelChanged)
+            self.table_model.set_data_changed_signal(self.model.tableModelChangedSignal)
             self.view.verticalLayout.addWidget(self.table_view)
 
     def load_example_json(self):
@@ -89,7 +90,7 @@ class Controller(QMainWindow):
         arr = CSV.read_csv_array(fname, delimiter=';')
         self.table_model.replace_all_data(data=arr[1:len(arr)], header=arr[0])
         self.table_view.setModel(self.table_model)
-        self.table_model.set_data_changed_signal(self.model.tableModelChanged)
+        self.table_model.set_data_changed_signal(self.model.tableModelChangedSignal)
         self.view.verticalLayout.addWidget(self.table_view)
 
     def save(self):

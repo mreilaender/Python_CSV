@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'window.ui'
 #
-# Created: Thu Mar 31 12:31:55 2016
+# Created: Mon Apr 18 20:45:27 2016
 #      by: pyside-uic 0.2.15 running on PySide 1.2.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -56,11 +56,19 @@ class Ui_MainView(object):
         self.actionSave_config.setObjectName("actionSave_config")
         self.actionLoad_Config = QtGui.QAction(MainView)
         self.actionLoad_Config.setObjectName("actionLoad_Config")
+        self.actionUndo = QtGui.QAction(MainView)
+        self.actionUndo.setShortcutContext(QtCore.Qt.WindowShortcut)
+        self.actionUndo.setObjectName("actionUndo")
+        self.actionRedo = QtGui.QAction(MainView)
+        self.actionRedo.setObjectName("actionRedo")
         self.menuFile.addAction(self.open)
         self.menuFile.addAction(self.save)
         self.menuFile.addAction(self.save_as)
         self.menuFile.addAction(self.actionNew)
         self.menuFile.addAction(self.actionExit)
+        self.menuEdit.addAction(self.actionUndo)
+        self.menuEdit.addAction(self.actionRedo)
+        self.menuEdit.addSeparator()
         self.menuEdit.addAction(self.actionCopy_as)
         self.menuEdit.addAction(self.insert_row)
         self.menuEdit.addSeparator()
@@ -107,4 +115,8 @@ class Ui_MainView(object):
         self.actionDatabase_Credentials.setText(QtGui.QApplication.translate("MainView", "Database Credentials", None, QtGui.QApplication.UnicodeUTF8))
         self.actionSave_config.setText(QtGui.QApplication.translate("MainView", "Save config", None, QtGui.QApplication.UnicodeUTF8))
         self.actionLoad_Config.setText(QtGui.QApplication.translate("MainView", "Load Config", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionUndo.setText(QtGui.QApplication.translate("MainView", "Undo", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionUndo.setShortcut(QtGui.QApplication.translate("MainView", "Ctrl+Z", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionRedo.setText(QtGui.QApplication.translate("MainView", "Redo", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionRedo.setShortcut(QtGui.QApplication.translate("MainView", "Ctrl+Y", None, QtGui.QApplication.UnicodeUTF8))
 

@@ -30,10 +30,6 @@ class Controller(QMainWindow):
         self.database_credentials = DB_Credentials()
         self.table_model = TableModel(data_in=[], header=[])
 
-        # Setup keyboard shortcuts
-        self.undo_shortcut = QShortcut(QKeySequence(self.tr("Ctrl+Z", "Undo")), self)
-        self.redo_shortcut = QShortcut(QKeySequence(self.tr("Ctrl+Y", "Redo")), self)
-
         # Just for testing purposes, loading personal config file
         data = JSON.load_config_from_json("..\\resources\\credentials.json")
         self.database_credentials.from_dict(data)
@@ -55,8 +51,8 @@ class Controller(QMainWindow):
         self.view.actionLoad_Config.triggered.connect(self.load_config_from_json)
         self.view.actionNew.triggered.connect(self.new)
         self.model.tableModelChanged.connect(self.model.table_model_changed)
-        self.undo_shortcut.activated.connect(self.model.undo)
-        self.redo_shortcut.activated.connect(self.model.redo)
+        self.view.actionUndo.triggered.connect(self.model.undo)
+        self.view.actionRedo.triggered.connect(self.model.redo)
         self.view.actionDatabase_Credentials.triggered.connect(lambda: self.database_credentials.exec_())
         # self.view.open.triggered.connect(lambda: self.entities.on_button_pressed(self.view.open))
         # self.view.save.triggered.connect(lambda: self.entities.on_button_pressed(self.view.save))

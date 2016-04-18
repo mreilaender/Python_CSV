@@ -55,8 +55,9 @@ class TableModel(QAbstractTableModel):
         return Qt.ItemIsEditable | Qt.ItemIsSelectable | Qt.ItemIsEnabled
 
     def setData(self, index, value, role):
-        old = self.data_in[index.row()][index.column()]
-        self.data_changed_signal.emit(self, index, old, value)
+        if role is not None:
+            old = self.data_in[index.row()][index.column()]
+            self.data_changed_signal.emit(self, index, old, value)
         self.data_in[index.row()][index.column()] = value
         return True
 

@@ -2,7 +2,7 @@ import json
 import os
 import sys
 
-from PySide.QtGui import QMainWindow, QFileDialog, QTableView, QApplication, QInputDialog
+from PySide.QtGui import QMainWindow, QFileDialog, QTableView, QApplication, QInputDialog, QShortcut, QKeySequence
 from resources.view import Ui_MainView
 from src.TableModel import TableModel
 from src.model import Model
@@ -25,13 +25,14 @@ class Controller(QMainWindow):
         self.view.setupUi(self)
         self.setFixedSize(800, 600)
 
-        # Set up action handler
-        self.setup_signals()
-
         # Set up everything else
         self.table_view = QTableView()
         self.database_credentials = DB_Credentials()
         self.table_model = TableModel(data_in=[], header=[])
+
+        # Setup keyboard shortcuts
+        self.undo_shortcut = QShortcut(QKeySequence(self.tr("Ctrl+Z", "Undo")), self)
+        self.redo_shortcut = QShortcut(QKeySequence(self.tr("Ctrl+Y", "Redo")), self)
 
         # Just for testing purposes, loading personal config file
         data = JSON.load_config_from_json("..\\resources\\credentials.json")
@@ -40,6 +41,9 @@ class Controller(QMainWindow):
         self.session = None
         # Loading example Json -> resources/sample.json
         self.load_example_json()
+
+        # Set up action handler
+        self.setup_signals()
 
     def setup_signals(self):
         self.view.open.triggered.connect(self.open)
@@ -51,6 +55,8 @@ class Controller(QMainWindow):
         self.view.actionLoad_Config.triggered.connect(self.load_config_from_json)
         self.view.actionNew.triggered.connect(self.new)
         self.model.tableModelChanged.connect(self.model.table_model_changed)
+        self.undo_shortcut.activated.connect(self.model.undo)
+        self.redo_shortcut.activated.connect(self.model.redo)
         self.view.actionDatabase_Credentials.triggered.connect(lambda: self.database_credentials.exec_())
         # self.view.open.triggered.connect(lambda: self.entities.on_button_pressed(self.view.open))
         # self.view.save.triggered.connect(lambda: self.entities.on_button_pressed(self.view.save))

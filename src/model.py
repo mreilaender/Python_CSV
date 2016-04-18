@@ -3,6 +3,8 @@ from PySide.QtCore import Signal, QObject, QModelIndex, Slot
 from PySide.QtGui import QUndoStack
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+
+from src.commands.TableModelCommand import EditCommand
 from src.entities.tables import Sprengel, Partei, Stimmen
 
 
@@ -113,9 +115,17 @@ class Model(QObject):
         :param old: QVariant Old TableModel data
         :param new: QVariant New TableModel data
         """
-        # self.undostack.push(TableModelCommand(table_model, index, old, new))
-        print("TableModel changed at [%s, %s]" % (index.row(), index.column()))
-        print("Old Value: %s | New Value: %s" % (old, new))
+        self.undostack.push(EditCommand(table_model, index, old, new))
+        # print("TableModel changed at [%s, %s]" % (index.row(), index.column()))
+        # print("Old Value: %s | New Value: %s" % (old, new))
+
+    def undo(self):
+        # print("undoing")
+        self.undostack.undo()
+
+    def redo(self):
+        # print("redoing")
+        self.undostack.redo()
 
     def exit_handler(self):
         if self.session is not None:

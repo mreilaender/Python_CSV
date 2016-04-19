@@ -83,7 +83,11 @@ class TableModel(QAbstractTableModel):
         """
         self.layoutAboutToBeChanged.emit()
         if type(insert_data) is list:
-            self.data_in.insert(row, insert_data[0])
+            if rows != 1 and len(insert_data) != rows:
+                raise IndexError("Length of insert_data must be equal to rows")
+            for element in insert_data:
+                self.data_in.insert(row, element)
+                row += 1
         else:
             # Filling array with empty strings
             for tmp in range(rows):
@@ -100,7 +104,7 @@ class TableModel(QAbstractTableModel):
         del self.data_in[row:count]
         self.layoutChanged.emit()
 
-    def get_rows(self, row_index, count):
+    def get_rows(self, row_index, count=1):
         return self.data_in[row_index:row_index+count]
 
     def get_data_as_2d_array(self):

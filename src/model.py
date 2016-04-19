@@ -4,7 +4,7 @@ from PySide.QtGui import QUndoStack
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from src.commands.TableModelCommand import EditCommand, InsertRowCommand, DeleteRowCommand
+from src.commands.TableModelCommand import EditCommand, InsertRowCommand, DeleteRowCommand, DuplicateRowCommand
 from src.entities.tables import Sprengel, Partei, Stimmen
 
 
@@ -159,7 +159,8 @@ class Model(QObject):
         :param row: Row number
         """
         # TODO undostack
-        table_model.duplicateRow(row)
+        self.undostack.push(DuplicateRowCommand(table_model, row, table_model.get_rows(row)))
+        # table_model.duplicateRow(row)
 
     def delete_rows(self, table_model, row, count):
         """
@@ -169,9 +170,7 @@ class Model(QObject):
         :param row:
         :param table_model:
         """
-        # TODO undostack
-        self.undostack.push(DeleteRowCommand(table_model, row, table_model.get_rows(row, count)))
-        # table_model.removeRows(row, count)
+        self.undostack.push(DeleteRowCommand(table_model, row, table_model.get_rows(row, count=count)))
 
     def insert_row(self, table_model, row, count):
         """

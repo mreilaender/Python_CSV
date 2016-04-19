@@ -62,3 +62,21 @@ class DeleteRowCommand(QUndoCommand):
 
     def redo(self):
         self.model.removeRows(self.row_index, len(self.row_data))
+
+
+class DuplicateRowCommand(QUndoCommand):
+    """
+    TODO
+
+    """
+    def __init__(self, model, row_index, row_data):
+        super().__init__()
+        self.model = model
+        self.row_data = row_data
+        self.row_index = row_index
+
+    def undo(self):
+        self.model.removeRows(self.row_index, len(self.row_data))
+
+    def redo(self):
+        self.model.insertRow(self.row_index, insert_data=self.row_data)

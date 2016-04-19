@@ -22,11 +22,7 @@ class EditCommand(QUndoCommand):
         self.index = index
 
     def undo(self):
-        self.table_model.layoutAboutToBeChanged.emit()
         self.table_model.setData(self.index, self.old, None)
-        self.table_model.layoutChanged.emit()
 
     def redo(self):
-        self.table_model.layoutAboutToBeChanged.emit()
         self.table_model.setData(self.index, self.new, None)
-        self.table_model.layoutChanged.emit()

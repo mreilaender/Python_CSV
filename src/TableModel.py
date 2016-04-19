@@ -56,10 +56,12 @@ class TableModel(QAbstractTableModel):
         return Qt.ItemIsEditable | Qt.ItemIsSelectable | Qt.ItemIsEnabled
 
     def setData(self, index, value, role):
+        self.layoutAboutToBeChanged.emit()
         if role is not None:
             old = self.data_in[index.row()][index.column()]
             self.data_changed_signal.emit(self, index, old, value)
         self.data_in[index.row()][index.column()] = value
+        self.layoutChanged.emit()
         return True
 
     def insertRow(self, row, rows=1, insert_data=""):

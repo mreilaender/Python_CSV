@@ -1,5 +1,5 @@
 import pyperclip
-from PySide.QtCore import Signal, QObject, QModelIndex, Slot, QAbstractTableModel
+from PySide.QtCore import Signal, QObject, QModelIndex, Slot, QAbstractTableModel, Qt
 from PySide.QtGui import QUndoStack
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -13,9 +13,7 @@ class Model(QObject):
     MVC - Pattern: Represents the entities class
 
     """
-    updateProgressSignal = Signal(int)
     tableModelChangedSignal = Signal(QAbstractTableModel, QModelIndex, str, str)
-    copySignal = Signal(QAbstractTableModel, QModelIndex)
 
     def __init__(self):
         super(Model, self).__init__()
@@ -106,6 +104,48 @@ class Model(QObject):
             except Exception as e:
                 print("Could'nt insert into database, there are duplicate entries.")
 
+    def undo(self):
+        self.undostack.undo()
+
+    def redo(self):
+        self.undostack.redo()
+
+    def copy(self, table_model, index):
+        """
+        Copies the data from the given TableModel at the current index to the clipboard
+
+        :param table_model: QAbstractTableModel
+        :param index: QModelIndex
+        """
+        pyperclip.copy(table_model.data(index, Qt.DisplayRole))
+
+    def paste(self, table_model, index):
+        """
+        Pastes the data from the clipboard to the TableModel at the given index
+
+        :param table_model: QAbstractTableModel
+        :param index: QModelIndex
+        """
+        old_value = table_model.data(index, Qt.DisplayRole)
+        new_value = pyperclip.paste()
+        self.undostack.push(EditCommand(table_model, index, old_value, new_value))
+        table_model.setData(index, pyperclip.paste(), None)
+        del old_value, new_value
+
+    def cut(self, table_model, index):
+        """
+        Cuts the data from the given TableModel at the current index to the clipboard
+
+        :param table_model: QAbstractTableModel
+        :param index: QModelIndex
+        """
+        old_value = table_model.data(index, Qt.DisplayRole)
+        new_value = ""
+        self.copy(table_model, index)
+        table_model.setData(index, new_value, None)
+        self.undostack.push(EditCommand(table_model, index, old_value, new_value))
+        del old_value, new_value
+
     @Slot(QAbstractTableModel, QModelIndex, str, str)
     def table_model_changed(self, table_model, index, old, new):
         """
@@ -119,16 +159,6 @@ class Model(QObject):
         self.undostack.push(EditCommand(table_model, index, old, new))
         # print("TableModel changed at [%s, %s]" % (index.row(), index.column()))
         # print("Old Value: %s | New Value: %s" % (old, new))
-
-    def undo(self):
-        self.undostack.undo()
-
-    def redo(self):
-        self.undostack.redo()
-
-    def copy(self, table_model, index):
-        pyperclip.copy(table_model)
-        print("Current index: [%s, %s]" % (index.row(), index.column()))
 
     def exit_handler(self):
         if self.session is not None:

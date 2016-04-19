@@ -7,3 +7,7 @@ Execute controller.py using python 3.4 (x32) :)
 # Known Bugs
 - When saving, there will be a blank row between all rows
 - When a file has blank rows, nothing will be displayed (interacts with the first bug)
+
+# ToDo
+- Merging the database into the TableModel
+- Undo/Redo History

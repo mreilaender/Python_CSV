@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'window.ui'
 #
-# Created: Mon Apr 18 20:59:48 2016
+# Created: Tue Apr 19 15:00:19 2016
 #      by: pyside-uic 0.2.15 running on PySide 1.2.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -67,6 +67,12 @@ class Ui_MainView(object):
         self.actionCut.setObjectName("actionCut")
         self.actionPaste = QtGui.QAction(MainView)
         self.actionPaste.setObjectName("actionPaste")
+        self.actionShow_from_database = QtGui.QAction(MainView)
+        self.actionShow_from_database.setObjectName("actionShow_from_database")
+        self.actionDuplicate_Row = QtGui.QAction(MainView)
+        self.actionDuplicate_Row.setObjectName("actionDuplicate_Row")
+        self.actionDelete_row = QtGui.QAction(MainView)
+        self.actionDelete_row.setObjectName("actionDelete_row")
         self.menuFile.addAction(self.open)
         self.menuFile.addAction(self.save)
         self.menuFile.addAction(self.save_as)
@@ -79,12 +85,16 @@ class Ui_MainView(object):
         self.menuEdit.addAction(self.actionCopy)
         self.menuEdit.addAction(self.actionCopy_as)
         self.menuEdit.addAction(self.actionPaste)
-        self.menuEdit.addAction(self.insert_row)
         self.menuEdit.addSeparator()
         self.menuEdit.addAction(self.actionInsert_into_databse)
+        self.menuEdit.addAction(self.actionShow_from_database)
         self.menuEdit.addAction(self.actionDatabase_Credentials)
         self.menuEdit.addAction(self.actionSave_config)
         self.menuEdit.addAction(self.actionLoad_Config)
+        self.menuEdit.addSeparator()
+        self.menuEdit.addAction(self.insert_row)
+        self.menuEdit.addAction(self.actionDuplicate_Row)
+        self.menuEdit.addAction(self.actionDelete_row)
         self.menubar.addAction(self.menuFile.menuAction())
         self.menubar.addAction(self.menuEdit.menuAction())
         self.menubar.addAction(self.menuWindows.menuAction())
@@ -118,7 +128,7 @@ class Ui_MainView(object):
         self.actionExit.setText(QtGui.QApplication.translate("MainView", "Exit", None, QtGui.QApplication.UnicodeUTF8))
         self.actionExit.setStatusTip(QtGui.QApplication.translate("MainView", "Exit program", None, QtGui.QApplication.UnicodeUTF8))
         self.actionExit.setShortcut(QtGui.QApplication.translate("MainView", "Ctrl+Q", None, QtGui.QApplication.UnicodeUTF8))
-        self.insert_row.setText(QtGui.QApplication.translate("MainView", "Insert Row", None, QtGui.QApplication.UnicodeUTF8))
+        self.insert_row.setText(QtGui.QApplication.translate("MainView", "Insert row", None, QtGui.QApplication.UnicodeUTF8))
         self.insert_row.setShortcut(QtGui.QApplication.translate("MainView", "Ctrl+I", None, QtGui.QApplication.UnicodeUTF8))
         self.actionInsert_into_databse.setText(QtGui.QApplication.translate("MainView", "Insert into database", None, QtGui.QApplication.UnicodeUTF8))
         self.actionDatabase_Credentials.setText(QtGui.QApplication.translate("MainView", "Database Credentials", None, QtGui.QApplication.UnicodeUTF8))
@@ -134,4 +144,8 @@ class Ui_MainView(object):
         self.actionCut.setShortcut(QtGui.QApplication.translate("MainView", "Ctrl+X", None, QtGui.QApplication.UnicodeUTF8))
         self.actionPaste.setText(QtGui.QApplication.translate("MainView", "Paste", None, QtGui.QApplication.UnicodeUTF8))
         self.actionPaste.setShortcut(QtGui.QApplication.translate("MainView", "Ctrl+V", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionShow_from_database.setText(QtGui.QApplication.translate("MainView", "Show from database", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionDuplicate_Row.setText(QtGui.QApplication.translate("MainView", "Duplicate row", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionDuplicate_Row.setShortcut(QtGui.QApplication.translate("MainView", "Ctrl+D", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionDelete_row.setText(QtGui.QApplication.translate("MainView", "Delete row", None, QtGui.QApplication.UnicodeUTF8))
 

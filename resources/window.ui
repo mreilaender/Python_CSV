@@ -52,12 +52,16 @@
     <addaction name="actionCopy"/>
     <addaction name="actionCopy_as"/>
     <addaction name="actionPaste"/>
-    <addaction name="insert_row"/>
     <addaction name="separator"/>
     <addaction name="actionInsert_into_databse"/>
+    <addaction name="actionShow_from_database"/>
     <addaction name="actionDatabase_Credentials"/>
     <addaction name="actionSave_config"/>
     <addaction name="actionLoad_Config"/>
+    <addaction name="separator"/>
+    <addaction name="insert_row"/>
+    <addaction name="actionDuplicate_Row"/>
+    <addaction name="actionDelete_row"/>
    </widget>
    <widget class="QMenu" name="menuWindows">
     <property name="title">
@@ -140,7 +144,7 @@
   </action>
   <action name="insert_row">
    <property name="text">
-    <string>Insert Row</string>
+    <string>Insert row</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+I</string>
@@ -207,6 +211,24 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+V</string>
+   </property>
+  </action>
+  <action name="actionShow_from_database">
+   <property name="text">
+    <string>Show from database</string>
+   </property>
+  </action>
+  <action name="actionDuplicate_Row">
+   <property name="text">
+    <string>Duplicate row</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+D</string>
+   </property>
+  </action>
+  <action name="actionDelete_row">
+   <property name="text">
+    <string>Delete row</string>
    </property>
   </action>
  </widget>

@@ -43,7 +43,6 @@ class Controller(QMainWindow):
 
     def setup_signals(self):
         self.view.open.triggered.connect(self.open)
-        self.view.insert_row.triggered.connect(self.insert_row)
         self.view.save.triggered.connect(self.save)
         self.view.save_as.triggered.connect(self.save_as)
         self.view.actionInsert_into_databse.triggered.connect(self.into_db)
@@ -53,11 +52,20 @@ class Controller(QMainWindow):
         self.model.tableModelChangedSignal.connect(self.model.table_model_changed)
         self.view.actionUndo.triggered.connect(self.model.undo)
         self.view.actionRedo.triggered.connect(self.model.redo)
-        self.view.actionCopy.triggered.connect(lambda: self.model.copy(self.model, self.table_view.currentIndex()))
-        self.view.actionDatabase_Credentials.triggered.connect(lambda: self.database_credentials.exec_())
-        # self.view.open.triggered.connect(lambda: self.entities.on_button_pressed(self.view.open))
-        # self.view.save.triggered.connect(lambda: self.entities.on_button_pressed(self.view.save))
-        # self.view.save_as.triggered.connect(lambda: self.entities.on_button_pressed(self.view.save_as))
+        self.view.actionCopy.triggered.connect(
+            lambda: self.model.copy(self.table_model, self.table_view.currentIndex()))
+        self.view.insert_row.triggered.connect(
+            lambda: self.model.insert_row(self.table_model, self.table_view.currentIndex().row(), 1))
+        self.view.actionPaste.triggered.connect(
+            lambda: self.model.paste(self.table_model, self.table_view.currentIndex()))
+        self.view.actionCut.triggered.connect(
+            lambda: self.model.cut(self.table_model, self.table_view.currentIndex()))
+        self.view.actionDatabase_Credentials.triggered.connect(
+            lambda: self.database_credentials.exec_())
+        self.view.actionDuplicate_Row.triggered.connect(
+            lambda: self.model.duplicate_row(self.table_model, self.table_view.currentIndex().row()))
+        self.view.actionDelete_row.triggered.connect(
+            lambda: self.model.delete_rows(self.table_model, self.table_view.currentIndex().row(), 2))
 
     def open(self):
         """
@@ -125,13 +133,6 @@ class Controller(QMainWindow):
         self.database_credentials.from_dict(JSON.load_config_from_json(fname[0]))
         self.database_credentials.update()
 
-    def insert_row(self):
-        """
-        Inserts a row at below the row of the currently focused element
-
-        """
-        self.table_model.insertRow(self.table_view.currentIndex().row()+1)
-
     def into_db(self):
         engine = None
         if self.database_credentials.hostname == '':
@@ -147,7 +148,7 @@ class Controller(QMainWindow):
                                       self.database_credentials.hostname, self.database_credentials.database)
 
         if self.table_model is not None:
-            self.model.insert_into_db(self.table_model, self.progress_bar)
+            self.model.insert_into_db(self.table_model)
         else:
             self.view.statusbar.showMessage("No data to process. Please load a file first")
 

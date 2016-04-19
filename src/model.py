@@ -4,7 +4,7 @@ from PySide.QtGui import QUndoStack
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from src.commands.TableModelCommand import EditCommand
+from src.commands.TableModelCommand import EditCommand, InsertRowCommand
 from src.entities.tables import Sprengel, Partei, Stimmen
 
 
@@ -58,7 +58,7 @@ class Model(QObject):
         Session = sessionmaker(bind=engine, autoflush=False)
         self.session = Session()
 
-    def insert_into_db(self, table_model, progress_bar):
+    def insert_into_db(self, table_model):
         tmp = []
         if table_model is not None:
             arr = table_model.get_data_as_2d_array()
@@ -129,7 +129,6 @@ class Model(QObject):
         old_value = table_model.data(index, Qt.DisplayRole)
         new_value = pyperclip.paste()
         self.undostack.push(EditCommand(table_model, index, old_value, new_value))
-        table_model.setData(index, pyperclip.paste(), None)
         del old_value, new_value
 
     def cut(self, table_model, index):
@@ -142,16 +141,53 @@ class Model(QObject):
         old_value = table_model.data(index, Qt.DisplayRole)
         new_value = ""
         self.copy(table_model, index)
-        table_model.setData(index, new_value, None)
         self.undostack.push(EditCommand(table_model, index, old_value, new_value))
         del old_value, new_value
+
+    def show_from_database(self, table_model):
+        """
+        Loads the data from the database into the TableModel
+
+        """
+        arr = [4, 1]
+        # TODO
+
+    def duplicate_row(self, table_model, row):
+        """
+        Duplicates row at the current row
+
+        :param row: Row number
+        """
+        # TODO undostack
+        table_model.duplicateRow(row)
+
+    def delete_rows(self, table_model, row, count):
+        """
+        Deletes the current focused row
+
+        :param count:
+        :param row:
+        :param table_model:
+        """
+        # TODO undostack
+        table_model.removeRows(row, count)
+
+    def insert_row(self, table_model, row, count):
+        """
+        Inserts a blank row at the current row index
+
+        :param table_model: QAbstractTableModel
+        :param row: int
+        :param count: int
+        """
+        self.undostack.push(InsertRowCommand(table_model, row, count))
 
     @Slot(QAbstractTableModel, QModelIndex, str, str)
     def table_model_changed(self, table_model, index, old, new):
         """
         Will be executed when data in the table model has been changed
 
-        :param table_model: TableModel where data has been changed
+        :param table_model: QAbstractTableModel TableModel where data has been changed
         :param index: QModelIndex
         :param old: QVariant Old TableModel data
         :param new: QVariant New TableModel data

@@ -26,3 +26,20 @@ class EditCommand(QUndoCommand):
 
     def redo(self):
         self.table_model.setData(self.index, self.new, None)
+
+
+class InsertRowCommand(QUndoCommand):
+    """
+    Handles undo/redo if inserting a row functionality of a QAbstractTableModel
+    """
+    def __init__(self, model, row, count):
+        super().__init__()
+        self.model = model
+        self.row = row
+        self.count = count
+
+    def undo(self):
+        self.model.removeRows(self.row, self.count)
+
+    def redo(self):
+        self.model.insertRow(self.row, self.count)

@@ -1,4 +1,4 @@
-from PySide.QtCore import QAbstractTableModel, Qt
+from PySide.QtCore import QAbstractTableModel, Qt, QModelIndex
 
 
 class TableModel(QAbstractTableModel):
@@ -76,6 +76,16 @@ class TableModel(QAbstractTableModel):
         # Filling array with empty strings
         for tmp in range(rows):
             self.data_in.insert(row, [insert_data for x in range(0, len(self.header))])
+        self.layoutChanged.emit()
+
+    def duplicateRow(self, row_index, parent=QModelIndex()):
+        self.layoutAboutToBeChanged.emit()
+        self.data_in.insert(row_index, self.data_in[row_index])
+        self.layoutChanged.emit()
+
+    def removeRows(self, row, count, parent=QModelIndex()):
+        self.layoutAboutToBeChanged.emit()
+        del self.data_in[row:count]
         self.layoutChanged.emit()
 
     def get_data_as_2d_array(self):

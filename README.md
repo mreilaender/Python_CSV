@@ -5,7 +5,7 @@ Execute controller.py using python 3.4 (x32) :)
 - PySide (1.2.4)
 
 # Known Bugs
-- When saving, there will be a blank row between all rows
+- When saving, there will be a blank row between all rows (in the saved CSV File)
 - When a file has blank rows, nothing will be displayed (interacts with the first bug)
 
 # ToDo

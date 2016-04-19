@@ -65,7 +65,7 @@ class Controller(QMainWindow):
         self.view.actionDuplicate_Row.triggered.connect(
             lambda: self.model.duplicate_row(self.table_model, self.table_view.currentIndex().row()))
         self.view.actionDelete_row.triggered.connect(
-            lambda: self.model.delete_rows(self.table_model, self.table_view.currentIndex().row(), 2))
+            lambda: self.model.delete_rows(self.table_model, self.table_view.currentIndex().row(), 1))
 
     def open(self):
         """

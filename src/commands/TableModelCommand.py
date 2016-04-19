@@ -6,7 +6,7 @@ class EditCommand(QUndoCommand):
     Handles undo/redo functionality of a QAbstractTableModel
 
     """
-    def __init__(self, table_model, index, old, new):
+    def __init__(self, model, index, old, new):
         """
         Constructor
 
@@ -16,21 +16,22 @@ class EditCommand(QUndoCommand):
         :param new: QVariant New TableModel data
         """
         super().__init__()
-        self.table_model = table_model
+        self.model = model
         self.old = old
         self.new = new
         self.index = index
 
     def undo(self):
-        self.table_model.setData(self.index, self.old, None)
+        self.model.setData(self.index, self.old, None)
 
     def redo(self):
-        self.table_model.setData(self.index, self.new, None)
+        self.model.setData(self.index, self.new, None)
 
 
 class InsertRowCommand(QUndoCommand):
     """
     Handles undo/redo if inserting a row functionality of a QAbstractTableModel
+
     """
     def __init__(self, model, row, count):
         super().__init__()
@@ -43,3 +44,21 @@ class InsertRowCommand(QUndoCommand):
 
     def redo(self):
         self.model.insertRow(self.row, self.count)
+
+
+class DeleteRowCommand(QUndoCommand):
+    """
+    TODO
+
+    """
+    def __init__(self, model, row_index, row_data):
+        super().__init__()
+        self.model = model
+        self.row_index = row_index
+        self.row_data = row_data
+
+    def undo(self):
+        self.model.insertRow(self.row_index, insert_data=self.row_data)
+
+    def redo(self):
+        self.model.removeRows(self.row_index, len(self.row_data))

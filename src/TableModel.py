@@ -32,6 +32,15 @@ class TableModel(QAbstractTableModel):
             self.header = header
         self.layoutChanged.emit()
 
+    def get_row(self, row_index):
+        """
+        Returns a row at the given row index as an array
+
+        :param row_index: int Index of the row
+        :return: Array
+        """
+        return self.data_in[row_index]
+
     def data(self, index, role):
         if not index.isValid():
             return None
@@ -68,14 +77,17 @@ class TableModel(QAbstractTableModel):
         """
         Inserts a row after a given row index
 
-        :param insert_data: Placeholder to be inserted in every column
+        :param insert_data: str or list Placeholder to be inserted in every column
         :param row: Int Row where the row will be inserted
         :param rows: Number of rows that will be implemented
         """
         self.layoutAboutToBeChanged.emit()
-        # Filling array with empty strings
-        for tmp in range(rows):
-            self.data_in.insert(row, [insert_data for x in range(0, len(self.header))])
+        if type(insert_data) is list:
+            self.data_in.insert(row, insert_data[0])
+        else:
+            # Filling array with empty strings
+            for tmp in range(rows):
+                self.data_in.insert(row, [insert_data for x in range(0, len(self.header))])
         self.layoutChanged.emit()
 
     def duplicateRow(self, row_index, parent=QModelIndex()):
@@ -87,6 +99,9 @@ class TableModel(QAbstractTableModel):
         self.layoutAboutToBeChanged.emit()
         del self.data_in[row:count]
         self.layoutChanged.emit()
+
+    def get_rows(self, row_index, count):
+        return self.data_in[row_index:row_index+count]
 
     def get_data_as_2d_array(self):
         table_data = self.data_in

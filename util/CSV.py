@@ -12,7 +12,7 @@ class CSV:
         return data
 
     @staticmethod
-    def save_csv_2darray(array, filename, delimiter=' ', mode='x'):
+    def save_csv_2darray(array, filename, delimiter=' ', mode='x+'):
         # TODO implement reader with 'with' statement
         writer = csv.writer(open(filename, mode=mode), delimiter=delimiter)
         for row in array:

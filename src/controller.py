@@ -83,7 +83,7 @@ class Controller(QMainWindow):
                 arr = CSV.read_csv_array(fname[0], delimiter=delimiter[0])
             else:
                 arr = CSV.read_csv_array(fname[0], delimiter=';')
-            self.table_model.replace_data(arr[1:len(arr)], arr[0])
+            self.table_model.replace_all_data(data=arr[1:len(arr)], header=arr[0])
             self.table_view.setModel(self.table_model)
             self.table_model.set_data_changed_signal(self.model.tableModelChangedSignal)
             self.view.verticalLayout.addWidget(self.table_view)
@@ -105,7 +105,7 @@ class Controller(QMainWindow):
         if self.table_view.model() is not None:
             if self.model.current_file is not None:
                 arr = self.table_view.model().get_data_as_2d_array()
-                CSV.save_csv_2darray(arr, self.model.current_file, delimiter=';', mode='w')
+                CSV.save_csv_2darray(arr, self.model.current_file, delimiter=';', mode='w+')
             else:
                 self.save_as()
         else:
@@ -117,6 +117,8 @@ class Controller(QMainWindow):
             fname = QFileDialog.getSaveFileName(self, 'Saving file...', os.getcwd())
             if not fname[0] == '':
                 self.model.current_file = fname[0]
+                self.save()
+
         else:
             # QErrorMessage().showMessage("Test") # immediately closes, dont know why TODO
             self.view.statusbar.showMessage("Please open a file first")

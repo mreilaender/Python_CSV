@@ -91,6 +91,13 @@ CREATE TABLE hrergebnis (
   FOREIGN KEY(parteinr) REFERENCES partei (nummer)
 );
 
+DROP TABLE IF EXISTS test;
+CREATE TABLE test (
+  test INT,
+  zeitpunkthochrechnung TIME,
+  PRIMARY KEY (test)
+);
+
 -- INSERTs
 
 INSERT INTO wahl(termin, mandate) VALUES('2015-10-11', 100);
@@ -334,6 +341,7 @@ DELIMITER ;
 
 -- Stored Routine
 
+DROP PROCEDURE IF EXISTS erzeugeHochrechnung;
 DELIMITER //
 CREATE PROCEDURE erzeugeHochrechnung(IN whnr INT, IN zeitpunkt TIME)
 BEGIN
@@ -341,13 +349,14 @@ BEGIN
 	DECLARE n INT DEFAULT 0;
 	DECLARE i INT DEFAULT 0;
 
-	INSERT INTO Hochrechnung VALUES(whnr, zeitpunkt);
+	INSERT INTO hochrechnung VALUES(whnr, zeitpunkt);
 
 	SELECT SUM(gesstimmen) FROM wahlstimmen INTO totalStimmen;
 	SELECT COUNT(*) FROM partei INTO n;
 	SET i=1;
 	WHILE i<=n DO
-		INSERT INTO hrergebnis VALUES(whnr, zeitpunkthochrechnung, i, COALESCE((SELECT gesstimmen FROM wahlstimmen WHERE whnr = whnr AND parteinr = i)/totalStimmen * 100, 0));
+    INSERT INTO test VALUES (i, zeitpunkt);
+		INSERT INTO hrergebnis VALUES(whnr, COALESCE((SELECT gesstimmen FROM wahlstimmen WHERE whnr = whnr AND parteinr = i)/totalStimmen * 100, 0), zeitpunkt, i);
 		SET i = i + 1;
 	END WHILE;
 END; //

@@ -1,8 +1,7 @@
 # Usage
-Execute controller.py using python 3.4 (x32) :)
+1. Put in your database credentials in credentials.json.default and rename it to credentials.json
+2. Execute controller.py using python 3.4 (x32) :)
 
-# Requirements
-- PySide (1.2.4)
 
 # Known Bugs
 - When saving, there will be a blank row between all rows (in the saved CSV File)

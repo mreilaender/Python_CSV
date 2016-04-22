@@ -93,7 +93,7 @@ class Controller(QMainWindow):
         Loads the example json file located in resources. Only for testing purposes
 
         """
-        fname = os.path.abspath("../resources/sample.csv")
+        fname = os.path.abspath("../resources/Hochrechnung1.csv")
         self.model.current_file = fname
         arr = CSV.read_csv_array(fname, delimiter=';')
         self.table_model.replace_all_data(data=arr[1:len(arr)], header=arr[0])

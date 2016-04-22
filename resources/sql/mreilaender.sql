@@ -91,13 +91,6 @@ CREATE TABLE hrergebnis (
   FOREIGN KEY(parteinr) REFERENCES partei (nummer)
 );
 
-DROP TABLE IF EXISTS test;
-CREATE TABLE test (
-  test INT,
-  zeitpunkthochrechnung TIME,
-  PRIMARY KEY (test)
-);
-
 -- INSERTs
 
 INSERT INTO wahl(termin, mandate) VALUES('2015-10-11', 100);
@@ -355,7 +348,6 @@ BEGIN
 	SELECT COUNT(*) FROM partei INTO n;
 	SET i=1;
 	WHILE i<=n DO
-    INSERT INTO test VALUES (i, zeitpunkt);
 		INSERT INTO hrergebnis VALUES(whnr, COALESCE((SELECT gesstimmen FROM wahlstimmen WHERE whnr = whnr AND parteinr = i)/totalStimmen * 100, 0), zeitpunkt, i);
 		SET i = i + 1;
 	END WHILE;
